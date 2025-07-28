@@ -1,5 +1,3 @@
-
-
 import { pipeline } from '@xenova/transformers'
 import { type EmbeddingsInterface } from '@langchain/core/embeddings'
 
