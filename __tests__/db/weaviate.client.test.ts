@@ -3,12 +3,8 @@ import { vi, expect, test } from 'vitest'
 import { client, vectorStore } from '@db/weaviate.client'
 import type { Document } from "@langchain/core/documents";
 
-import '../../env.config'
-
-
-const originalImplementation = Array.isArray;
-
 // Patch Array.isArray to workaround issue with onnxruntime
+const originalImplementation = Array.isArray;
 vi.spyOn(Array, "isArray").mockImplementation((value: unknown) => {
   if (
     value != null &&
