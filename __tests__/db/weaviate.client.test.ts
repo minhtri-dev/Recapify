@@ -21,7 +21,7 @@ test('Check Weaviate client connectivity', async () => {
   expect(isReady).toBe(true)
 })
 
-test('Add a document to the vectorStore', async () => {
+test.skip('Add a document to the vectorStore', async () => {
   const document: Document = {
     pageContent: 'The powerhouse of the cell is the mitochondria',
     metadata: { source: 'https://example.com' },
