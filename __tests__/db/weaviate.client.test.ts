@@ -1,5 +1,5 @@
 import { vi, expect, test } from 'vitest'
-import { client, vectorStore } from '@db/weaviate.client'
+import { getWeaviateClient, getVectorStore } from '@db/weaviate.client'
 import type { Document } from '@langchain/core/documents'
 
 // Patch Array.isArray to workaround issue with onnxruntime
@@ -17,11 +17,13 @@ vi.spyOn(Array, 'isArray').mockImplementation((value: unknown) => {
 })
 
 test('Check Weaviate client connectivity', async () => {
+  const client = await getWeaviateClient()
   const isReady = await client.isReady()
   expect(isReady).toBe(true)
 })
 
 test.skip('Add a document to the vectorStore', async () => {
+  const vectorStore = await getVectorStore()
   const document: Document = {
     pageContent: 'The powerhouse of the cell is the mitochondria',
     metadata: { source: 'https://example.com' },
