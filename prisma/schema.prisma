@@ -3,44 +3,93 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("DATABASE_URL")
-  directUrl = env("DIRECT_DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @map("supabase_id") 
-  name      String?
-  email     String   @unique
-  password  String
-  projects  Projects[]
-  sources   Sources[]
+  id            String     @id @default(cuid())
+  name          String?
+  email         String     @unique
+  image         String?
+  emailVerified DateTime?
+  accounts      Account[]
+  sessions      Session[]
+  projects      Project[]
+  sources       Source[]
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
-model Projects {
+// Define the models for authentication
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@id([identifier, token])
+}
+
+// Define the Project and Note models
+
+model Project {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    String
   user      User     @relation(fields: [userId], references: [id])
   name      String
   startDate DateTime
   endDate   DateTime?
-  notes     Notes[]
+  notes     Note[]
 }
 
-model Notes {
+model Note {
   id        Int      @id @default(autoincrement())
-  projectId Int?
-  project   Projects? @relation(fields: [projectId], references: [id])
+  projectId Int
+  project   Project  @relation(fields: [projectId], references: [id])
   content   String
   vector    Unsupported("vector")?
-  sources   Sources[]
+  sources   Source[]
 }
 
-model Sources {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  content   String
-  url       String?
-  Notes     Notes[]
+model Source {
+  id      Int     @id @default(autoincrement())
+  userId  String
+  user    User    @relation(fields: [userId], references: [id])
+  content String
+  url     String?
+  notes   Note[]
 }

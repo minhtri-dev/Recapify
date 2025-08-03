@@ -1,2 +1,4 @@
 export { default as Footer } from './Footer'
 export { default as Header } from './Header'
+export { default as SignIn } from './SignIn'
+export { default as SignOut } from './SignOut'
