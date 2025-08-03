@@ -90,6 +90,7 @@ model Source {
   userId  String
   user    User    @relation(fields: [userId], references: [id])
   content String
+  vector  Unsupported("vector")?
   url     String?
   notes   Note[]
 }
