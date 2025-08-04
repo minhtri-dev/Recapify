@@ -10,6 +10,7 @@ export async function GET() {
   }
   const projects = await prisma.project.findMany({
     where: { userId: session.user.id },
+    include: { notes: true },
   })
   return NextResponse.json(projects)
 }
