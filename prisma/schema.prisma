@@ -71,8 +71,6 @@ model Project {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   name      String
-  startDate DateTime
-  endDate   DateTime?
   notes     Note[]
 }
 
