@@ -13,6 +13,7 @@ export async function GET(
   }
   const project = await prisma.project.findUnique({
     where: { id: Number(params.id) },
+    include: { notes: true },
   })
   if (!project || project.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
