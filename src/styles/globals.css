@@ -1,1 +1,7 @@
 @import 'tailwindcss';
+
+@theme {
+  --color-recapify-dark: #42464b;
+  --color-recapify-teal: #00acc1;
+  --color-recapify-light: #e6f2f5;
+}
