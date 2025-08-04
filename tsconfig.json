@@ -22,7 +22,7 @@
       "@*": ["./src/*"],
       "@components": ["./src/components/index"],
       "@env.config": ["./env.config"],
-      "@auth": ["./auth"],
+      "@auth": ["./auth"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
