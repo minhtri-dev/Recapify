@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ScraperTool } from '@agent/tools/langchain.scraper.tool'
+import { ScraperTool } from '@agent/tools/scraper.tool'
 import { auth } from '@auth'
 import prisma from '@db/prisma.client'
 import { z } from 'zod'
