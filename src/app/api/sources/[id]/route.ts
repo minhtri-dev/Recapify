@@ -11,8 +11,11 @@ export async function GET(
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  
+  const { id } = await params
+  
   const source = await prisma.source.findUnique({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
   })
   if (!source || source.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -28,15 +31,18 @@ export async function PUT(
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  
+  const { id } = await params
   const { content, url } = await req.json()
+  
   const source = await prisma.source.findUnique({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
   })
   if (!source || source.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
   const updatedSource = await prisma.source.update({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
     data: { content, url },
   })
   return NextResponse.json(updatedSource)
@@ -50,14 +56,17 @@ export async function DELETE(
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  
+  const { id } = await params
+  
   const source = await prisma.source.findUnique({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
   })
   if (!source || source.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
   await prisma.source.delete({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
   })
   return NextResponse.json({ success: true })
 }

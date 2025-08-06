@@ -16,8 +16,11 @@ export async function GET(
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  
+  const { id } = await params
+  
   const note = await prisma.note.findUnique({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
     include: { sources: true, project: true },
   })
   
@@ -29,7 +32,7 @@ export async function GET(
 
 /**
  * PUT /api/notes/[id]
- * Update a note’s content and optionally its attached sources.
+ * Update a note's content and optionally its attached sources.
  * Checks that the note belongs to a project owned by the current user.
  *
  * Expected JSON body:
@@ -46,11 +49,13 @@ export async function PUT(
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  
+  const { id } = await params
   const { content, sources } = await req.json()
   
   // Fetch the note along with its project to verify ownership
   const note = await prisma.note.findUnique({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
     include: { project: true },
   })
   
@@ -60,7 +65,7 @@ export async function PUT(
   
   try {
     const updatedNote = await prisma.note.update({
-      where: { id: Number(params.id) },
+      where: { id: Number(id) },
       data: {
         content,
         // If sources are provided, replace the connections.
@@ -90,8 +95,11 @@ export async function DELETE(
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  
+  const { id } = await params
+  
   const note = await prisma.note.findUnique({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
     include: { project: true },
   })
   if (!note || note.project.userId !== session.user.id) {
@@ -100,7 +108,7 @@ export async function DELETE(
   
   try {
     await prisma.note.delete({
-      where: { id: Number(params.id) },
+      where: { id: Number(id) },
     })
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
