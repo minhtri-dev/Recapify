@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { type Source } from '@schemas/source.model'
+import { uploadPdf } from '@utils/api.client'
 
 interface PdfUploadFormProps {
   onSuccess?: (source: Source) => void
@@ -46,34 +47,14 @@ export default function PdfUploadForm({
     setError(null)
 
     try {
-      // Create FormData for multipart upload
-      const formData = new FormData()
-      formData.append('files', file)
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Upload failed')
-      }
-
-      const result = await response.json()
+      const source = await uploadPdf(file)
       
-      if (result.errors && result.errors.length > 0) {
-        throw new Error(result.errors[0].error)
-      }
-
-      if (result.results && result.results.length > 0) {
-        setFile(null) // Clear form on success
-        // Reset file input
-        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
-        if (fileInput) fileInput.value = ''
-        
-        onSuccess?.(result.results[0])
-      }
+      // Clear form on success
+      setFile(null)
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
+      if (fileInput) fileInput.value = ''
+      
+      onSuccess?.(source)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to upload PDF'
       setError(errorMessage)
