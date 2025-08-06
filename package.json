@@ -34,6 +34,7 @@
     "html-to-text": "^9.0.5",
     "next": "15.3.4",
     "next-auth": "^5.0.0-beta.29",
+    "pdf-parse": "^1.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "weaviate-client": "^3.8.0",
