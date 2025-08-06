@@ -206,3 +206,33 @@ export async function uploadPdf(file: File): Promise<Source> {
   
   return response.results[0]
 }
+
+// Summary generation function
+export async function generateNoteSummary(
+  projectId: number,
+  sourceIds: number[],
+  title?: string
+): Promise<{
+  success: boolean
+  note: Note & {
+    sources: Array<{ id: number; url: string | null; content: string }>
+    project: { id: number; name: string }
+  }
+  metadata: {
+    sourcesUsed: number
+    totalSources: number
+    generatedAt: string
+  }
+}> {
+  if (!Array.isArray(sourceIds) || sourceIds.length === 0) {
+    throw new Error('At least one source ID is required')
+  }
+
+  const requestBody = {
+    sourceIds,
+    ...(title && { title })
+  }
+
+  const response = await apiClient.post(`/notes/summary/${projectId}`, requestBody)
+  return response.data
+}
