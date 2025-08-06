@@ -158,3 +158,51 @@ export async function uploadUrl(url: string): Promise<Source> {
   
   return response.results[0]
 }
+
+// PDF Upload API functions
+export async function uploadPdfs(files: File[]): Promise<{
+  success: boolean
+  results: Source[]
+  errors: { filename: string; error: string }[]
+  summary: { total: number; successful: number; failed: number }
+}> {
+  if (!Array.isArray(files) || files.length === 0) {
+    throw new Error('At least one file is required')
+  }
+
+  // Validate all files are PDFs
+  const invalidFiles = files.filter(file => file.type !== 'application/pdf')
+  if (invalidFiles.length > 0) {
+    throw new Error(`Invalid file types detected. Only PDF files are supported. Invalid files: ${invalidFiles.map(f => f.name).join(', ')}`)
+  }
+
+  // Create FormData for multipart upload
+  const formData = new FormData()
+  files.forEach(file => {
+    formData.append('files', file)
+  })
+
+  const response = await fetch('/api/upload', {
+    method: 'POST',
+    body: formData,
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: 'Upload failed' }))
+    throw new Error(errorData.error || `Upload failed with status ${response.status}`)
+  }
+
+  return response.json()
+}
+
+// Convenience function for single PDF
+export async function uploadPdf(file: File): Promise<Source> {
+  const response = await uploadPdfs([file])
+  
+  if (response.results.length === 0) {
+    const errorMessage = response.errors[0]?.error || 'Failed to upload PDF'
+    throw new Error(errorMessage)
+  }
+  
+  return response.results[0]
+}
