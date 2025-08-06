@@ -11,8 +11,11 @@ export async function GET(
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  
+  const { id } = await params
+  
   const project = await prisma.project.findUnique({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
     include: { notes: true },
   })
   if (!project || project.userId !== session.user.id) {
@@ -29,15 +32,18 @@ export async function PUT(
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  
+  const { id } = await params
   const { name } = await req.json()
+  
   const project = await prisma.project.findUnique({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
   })
   if (!project || project.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
   const updatedProject = await prisma.project.update({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
     data: { name },
   })
   return NextResponse.json(updatedProject)
@@ -51,14 +57,17 @@ export async function DELETE(
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  
+  const { id } = await params
+  
   const project = await prisma.project.findUnique({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
   })
   if (!project || project.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
   await prisma.project.delete({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
   })
   return NextResponse.json({ success: true })
 }
