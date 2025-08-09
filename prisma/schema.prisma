@@ -18,6 +18,7 @@ model User {
   sessions      Session[]
   projects      Project[]
   sources       Source[]
+  quizzes       Quiz[]
 
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
@@ -96,4 +97,48 @@ model Source {
   notes   Note[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Quiz and Question models
+
+model Quiz {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String   // e.g., "Neural Networks Practice Quiz"
+  prompt      String   // The original user prompt
+  questions   Question[] // One-to-many with questions
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("quizzes")
+}
+
+model Question {
+  id          Int      @id @default(autoincrement())
+  quizId      Int
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  content     String   // The actual question text
+  type        QuestionType @default(MULTIPLE_CHOICE)
+  options     String[] // For multiple choice questions (JSON array)
+  correctAnswer String? // The correct answer or answer key
+  explanation String?  // Optional explanation of the answer
+  difficulty  Difficulty @default(MEDIUM)
+  order       Int      // Order within the quiz
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("questions")
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
 }
