@@ -57,7 +57,7 @@ export async function DELETE(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   
-  const { id } = await params
+  const { id } = params
   
   const source = await prisma.source.findUnique({
     where: { id: Number(id) },

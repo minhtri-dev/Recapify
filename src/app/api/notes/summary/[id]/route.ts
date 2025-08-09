@@ -3,6 +3,8 @@ import { auth } from '@auth'
 import prisma from '@db/prisma.client'
 import { z } from 'zod'
 import { generateSummary } from '@utils/llm'
+import { Embeddings } from '@services/embeddings.service'
+import { addEmbeddingToNote } from '@db/prisma.vector'
 
 // Schema for the request body
 const SummaryRequestSchema = z.object({
@@ -30,7 +32,8 @@ export async function POST(
   }
 
   try {
-    const projectId = Number(params.id)
+    const { id } = await params
+    const projectId = Number(id)
     const body = await req.json()
     const { sourceIds, title } = SummaryRequestSchema.parse(body)
 
@@ -76,7 +79,10 @@ export async function POST(
     // Generate summary using LLM
     const summaryContent = await generateSummary(sources, title)
 
-    // Create the summary note
+    // Generate vector embedding for the summary content
+    const embedding = await Embeddings.embedQuery(summaryContent)
+
+    // Create the summary note with vector embedding
     const summaryNote = await prisma.note.create({
       data: {
         content: summaryContent,
@@ -101,6 +107,7 @@ export async function POST(
         }
       }
     })
+    addEmbeddingToNote(summaryNote.id)
 
     return NextResponse.json({
       success: true,
@@ -108,7 +115,8 @@ export async function POST(
       metadata: {
         sourcesUsed: sources.length,
         totalSources: sourceIds.length,
-        generatedAt: new Date().toISOString()
+        generatedAt: new Date().toISOString(),
+        embeddingDimensions: embedding.length
       }
     })
 
