@@ -16,7 +16,8 @@ import {
 } from '@schemas/source.model'
 import { 
   CreateQuizSchema, 
-  UpdateQuizSchema, 
+  UpdateQuizSchema,
+  GenerateQuizRequestSchema, 
   type Quiz,
   type QuizResponse,
 } from '@schemas/quiz.model'
@@ -310,5 +311,26 @@ export async function updateQuestion(
 
 export async function deleteQuestion(id: number): Promise<{ success: boolean }> {
   const response = await apiClient.delete<{ success: boolean }>(`/questions/${id}`)
+  return response.data
+}
+
+export async function generateQuiz(requestData: unknown): Promise<{
+  success: boolean
+  quiz: QuizResponse
+  metadata: {
+    questionsGenerated: number
+    notesUsed?: number
+    contextLength?: number
+    generatedAt: string
+    prompt: string
+    settings?: {
+      questionCount: number
+      questionTypes: string[]
+      difficulty: string
+    }
+  }
+}> {
+  const validatedData = GenerateQuizRequestSchema.parse(requestData)
+  const response = await apiClient.post('/quizzes/generate', validatedData)
   return response.data
 }
