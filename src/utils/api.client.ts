@@ -14,6 +14,20 @@ import {
   UpdateSourceSchema, 
   type Source 
 } from '@schemas/source.model'
+import { 
+  CreateQuizSchema, 
+  UpdateQuizSchema, 
+  type Quiz,
+  type QuizResponse,
+} from '@schemas/quiz.model'
+
+import {
+  CreateQuestionSchema,
+  UpdateQuestionSchema,
+  type Question,
+  type QuestionResponse,
+} from '@schemas/question.model'
+
 
 const apiClient = axios.create({
   baseURL: '/api',
@@ -234,5 +248,67 @@ export async function generateNoteSummary(
   }
 
   const response = await apiClient.post(`/notes/summary/${projectId}`, requestBody)
+  return response.data
+}
+
+// Quiz API functions
+export async function getQuizzes(): Promise<QuizResponse[]> {
+  const response = await apiClient.get<QuizResponse[]>('/quizzes')
+  return response.data
+}
+
+export async function getQuiz(id: number): Promise<QuizResponse> {
+  const response = await apiClient.get<QuizResponse>(`/quizzes/${id}`)
+  return response.data
+}
+
+export async function addQuiz(quizData: unknown): Promise<Quiz> {
+  const validatedData = CreateQuizSchema.parse(quizData)
+  const response = await apiClient.post<Quiz>('/quizzes', validatedData)
+  return response.data
+}
+
+export async function updateQuiz(
+  id: number, 
+  quizData: unknown
+): Promise<Quiz> {
+  const validatedData = UpdateQuizSchema.parse(quizData)
+  const response = await apiClient.put<Quiz>(`/quizzes/${id}`, validatedData)
+  return response.data
+}
+
+export async function deleteQuiz(id: number): Promise<{ success: boolean }> {
+  const response = await apiClient.delete<{ success: boolean }>(`/quizzes/${id}`)
+  return response.data
+}
+
+// Question API functions
+export async function getQuestions(quizId: number): Promise<QuestionResponse[]> {
+  const response = await apiClient.get<QuestionResponse[]>(`/quizzes/${quizId}/questions`)
+  return response.data
+}
+
+export async function getQuestion(id: number): Promise<QuestionResponse> {
+  const response = await apiClient.get<QuestionResponse>(`/questions/${id}`)
+  return response.data
+}
+
+export async function addQuestion(questionData: unknown): Promise<Question> {
+  const validatedData = CreateQuestionSchema.parse(questionData)
+  const response = await apiClient.post<Question>('/questions', validatedData)
+  return response.data
+}
+
+export async function updateQuestion(
+  id: number, 
+  questionData: unknown
+): Promise<Question> {
+  const validatedData = UpdateQuestionSchema.parse(questionData)
+  const response = await apiClient.put<Question>(`/questions/${id}`, validatedData)
+  return response.data
+}
+
+export async function deleteQuestion(id: number): Promise<{ success: boolean }> {
+  const response = await apiClient.delete<{ success: boolean }>(`/questions/${id}`)
   return response.data
 }
