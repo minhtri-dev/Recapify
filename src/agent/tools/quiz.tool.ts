@@ -17,7 +17,7 @@ interface QuizGenerationInput {
 }
 
 export class QuizGeneratorTool extends Tool {
-  name = "quiz_generator";
+  name = "QuizGenerator";
   description = "Generate educational quizzes based on user notes using similarity search and LLM generation";
 
   async _call(input: string): Promise<string> {
