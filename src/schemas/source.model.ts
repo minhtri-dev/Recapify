@@ -25,11 +25,15 @@ export const UpdateSourceSchema = z.object({
 
 // Schema for source API responses (including relations if needed)
 export const SourceResponseSchema = SourceSchema.extend({
-  notes: z.array(z.object({
-    id: z.number(),
-    content: z.string(),
-    projectId: z.number(),
-  })).optional(),
+  notes: z
+    .array(
+      z.object({
+        id: z.number(),
+        content: z.string(),
+        projectId: z.number(),
+      }),
+    )
+    .optional(),
 })
 
 // Type exports

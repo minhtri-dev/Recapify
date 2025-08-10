@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { 
-  streamChatWithAccumulation, 
+import {
+  streamChatWithAccumulation,
   createChatMessage,
-  type ChatMessage 
+  type ChatMessage,
 } from '@utils/agent.client'
 
 interface Message {
@@ -32,17 +32,17 @@ export default function Chatbot() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!input.trim() || isLoading) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: input.trim(),
-      timestamp: new Date()
+      timestamp: new Date(),
     }
 
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
     setError(null)
@@ -56,16 +56,16 @@ export default function Chatbot() {
       id: assistantMessageId,
       role: 'assistant',
       content: '',
-      timestamp: new Date()
+      timestamp: new Date(),
     }
 
     // Add empty assistant message immediately
-    setMessages(prev => [...prev, assistantMessage])
+    setMessages((prev) => [...prev, assistantMessage])
 
     try {
       // Convert messages to ChatMessage format
-      const chatMessages: ChatMessage[] = [...messages, userMessage].map(msg => 
-        createChatMessage(msg.role, msg.content)
+      const chatMessages: ChatMessage[] = [...messages, userMessage].map(
+        (msg) => createChatMessage(msg.role, msg.content),
       )
 
       // Stream the response with accumulation
@@ -73,26 +73,27 @@ export default function Chatbot() {
         chatMessages,
         (accumulatedContent) => {
           // Update the assistant message in real-time
-          setMessages(prev => 
-            prev.map(msg => 
-              msg.id === assistantMessageId 
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMessageId
                 ? { ...msg, content: accumulatedContent }
-                : msg
-            )
+                : msg,
+            ),
           )
         },
-        abortControllerRef.current.signal
+        abortControllerRef.current.signal,
       )
-
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         console.log('Request was aborted')
       } else {
         console.error('Chat error:', error)
         setError(error instanceof Error ? error.message : 'An error occurred')
-        
+
         // Remove the empty assistant message on error
-        setMessages(prev => prev.filter(msg => msg.id !== assistantMessageId))
+        setMessages((prev) =>
+          prev.filter((msg) => msg.id !== assistantMessageId),
+        )
       }
     } finally {
       setIsLoading(false)
@@ -132,7 +133,7 @@ export default function Chatbot() {
             <p>Start a conversation with the AI assistant!</p>
           </div>
         )}
-        
+
         {messages.map((message) => (
           <div
             key={message.id}
@@ -154,21 +155,27 @@ export default function Chatbot() {
             </div>
           </div>
         ))}
-        
+
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-gray-200 text-gray-800 max-w-xs lg:max-w-md px-4 py-2 rounded-lg">
               <div className="flex items-center space-x-1">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div
+                    className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.1s' }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.2s' }}
+                  ></div>
                 </div>
               </div>
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -190,7 +197,7 @@ export default function Chatbot() {
             disabled={isLoading}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
-          
+
           {isLoading ? (
             <button
               type="button"

@@ -5,7 +5,7 @@ import { auth } from '@auth'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -14,10 +14,10 @@ export async function GET(
 
   try {
     const { id } = await params
-    
+
     // Verify quiz belongs to user
     const quiz = await prisma.quiz.findUnique({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
     })
 
     if (!quiz || quiz.userId !== session.user.id) {
@@ -31,16 +31,19 @@ export async function GET(
           select: {
             id: true,
             title: true,
-            userId: true
-          }
-        }
+            userId: true,
+          },
+        },
       },
-      orderBy: { order: 'asc' }
+      orderBy: { order: 'asc' },
     })
 
     return NextResponse.json(questions)
   } catch (error) {
     console.error('Error fetching questions:', error)
-    return NextResponse.json({ error: 'Failed to fetch questions' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to fetch questions' },
+      { status: 500 },
+    )
   }
 }

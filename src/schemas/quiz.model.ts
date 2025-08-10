@@ -1,5 +1,9 @@
 import { z } from 'zod'
-import { QuestionSchema, QuestionTypeSchema, DifficultySchema } from './question.model'
+import {
+  QuestionSchema,
+  QuestionTypeSchema,
+  DifficultySchema,
+} from './question.model'
 
 // Quiz model schema
 export const QuizSchema = z.object({
@@ -15,7 +19,10 @@ export const QuizSchema = z.object({
 export const CreateQuizSchema = z.object({
   prompt: z.string().min(1, 'Prompt is required'),
   questionCount: z.number().int().min(1).max(50).default(10),
-  questionTypes: z.array(QuestionTypeSchema).min(1).default(['MULTIPLE_CHOICE']),
+  questionTypes: z
+    .array(QuestionTypeSchema)
+    .min(1)
+    .default(['MULTIPLE_CHOICE']),
   difficulty: DifficultySchema.default('MEDIUM'),
   title: z.string().optional(),
 })
@@ -24,23 +31,32 @@ export const CreateQuizSchema = z.object({
 export const GenerateQuizRequestSchema = z.object({
   prompt: z.string().min(1, 'Prompt is required'),
   questionCount: z.number().int().min(1).max(50).default(10),
-  questionTypes: z.array(QuestionTypeSchema).min(1).default(['MULTIPLE_CHOICE']),
+  questionTypes: z
+    .array(QuestionTypeSchema)
+    .min(1)
+    .default(['MULTIPLE_CHOICE']),
   difficulty: DifficultySchema.default('MEDIUM'),
 })
 
 // Schema for quiz API responses
 export const QuizResponseSchema = QuizSchema.extend({
   questions: z.array(QuestionSchema).optional(),
-  sourceNotes: z.array(z.object({
-    id: z.number(),
-    content: z.string(),
-    url: z.string().nullable(),
-  })).optional(),
-  user: z.object({
-    id: z.string(),
-    name: z.string().nullable(),
-    email: z.string(),
-  }).optional(),
+  sourceNotes: z
+    .array(
+      z.object({
+        id: z.number(),
+        content: z.string(),
+        url: z.string().nullable(),
+      }),
+    )
+    .optional(),
+  user: z
+    .object({
+      id: z.string(),
+      name: z.string().nullable(),
+      email: z.string(),
+    })
+    .optional(),
 })
 
 // Update schemas for updating

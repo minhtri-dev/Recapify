@@ -3,15 +3,11 @@ import { z } from 'zod'
 // Enums
 export const QuestionTypeSchema = z.enum([
   'MULTIPLE_CHOICE',
-  'TRUE_FALSE', 
-  'SHORT_ANSWER'
+  'TRUE_FALSE',
+  'SHORT_ANSWER',
 ])
 
-export const DifficultySchema = z.enum([
-  'EASY',
-  'MEDIUM',
-  'HARD'
-])
+export const DifficultySchema = z.enum(['EASY', 'MEDIUM', 'HARD'])
 
 // Question model schema
 export const QuestionSchema = z.object({
@@ -53,11 +49,13 @@ export const UpdateQuestionSchema = z.object({
 
 // Schema for question API responses
 export const QuestionResponseSchema = QuestionSchema.extend({
-  quiz: z.object({
-    id: z.number(),
-    title: z.string(),
-    userId: z.string(),
-  }).optional(),
+  quiz: z
+    .object({
+      id: z.number(),
+      title: z.string(),
+      userId: z.string(),
+    })
+    .optional(),
 })
 
 // Type exports

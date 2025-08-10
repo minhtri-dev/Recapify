@@ -1,17 +1,14 @@
 import axios from 'axios'
-import { 
-  CreateNoteSchema,
-  type Note 
-} from '@schemas/note.model'
-import { 
-  CreateSourceSchema, 
-  UpdateSourceSchema, 
-  type Source 
+import { CreateNoteSchema, type Note } from '@schemas/note.model'
+import {
+  CreateSourceSchema,
+  UpdateSourceSchema,
+  type Source,
 } from '@schemas/source.model'
-import { 
-  CreateQuizSchema, 
+import {
+  CreateQuizSchema,
   UpdateQuizSchema,
-  GenerateQuizRequestSchema, 
+  GenerateQuizRequestSchema,
   type Quiz,
   type QuizResponse,
 } from '@schemas/quiz.model'
@@ -23,7 +20,6 @@ import {
   type QuestionResponse,
 } from '@schemas/question.model'
 
-
 const apiClient = axios.create({
   baseURL: '/api',
   headers: {
@@ -34,9 +30,10 @@ const apiClient = axios.create({
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message = error.response?.data?.error || error.message || 'Unknown error'
+    const message =
+      error.response?.data?.error || error.message || 'Unknown error'
     throw new Error(message)
-  }
+  },
 )
 
 // Note API functions
@@ -59,7 +56,7 @@ export async function addNote(noteData: unknown): Promise<Note> {
 // Summary generation function
 export async function generateNoteSummary(
   sourceIds: number[],
-  title?: string
+  title?: string,
 ): Promise<{
   success: boolean
   note: Note & {
@@ -77,7 +74,7 @@ export async function generateNoteSummary(
 
   const requestBody = {
     sourceIds,
-    ...(title && { title })
+    ...(title && { title }),
   }
 
   const response = await apiClient.post('/notes/summary', requestBody)
@@ -102,8 +99,8 @@ export async function addSource(sourceData: unknown): Promise<Source> {
 }
 
 export async function updateSource(
-  id: number, 
-  sourceData: unknown
+  id: number,
+  sourceData: unknown,
 ): Promise<Source> {
   const validatedData = UpdateSourceSchema.parse(sourceData)
   const response = await apiClient.put<Source>(`/sources/${id}`, validatedData)
@@ -111,7 +108,9 @@ export async function updateSource(
 }
 
 export async function deleteSource(id: number): Promise<{ success: boolean }> {
-  const response = await apiClient.delete<{ success: boolean }>(`/sources/${id}`)
+  const response = await apiClient.delete<{ success: boolean }>(
+    `/sources/${id}`,
+  )
   return response.data
 }
 
@@ -126,9 +125,9 @@ export async function uploadUrls(urls: string[]): Promise<{
   if (!Array.isArray(urls) || urls.length === 0) {
     throw new Error('At least one URL is required')
   }
-  
+
   // Basic URL validation
-  urls.forEach(url => {
+  urls.forEach((url) => {
     try {
       new URL(url)
     } catch {
@@ -143,11 +142,11 @@ export async function uploadUrls(urls: string[]): Promise<{
 // Convenience function for single URL
 export async function uploadUrl(url: string): Promise<Source> {
   const response = await uploadUrls([url])
-  
+
   if (response.results.length === 0) {
     throw new Error(response.errors[0]?.error || 'Failed to upload URL')
   }
-  
+
   return response.results[0]
 }
 
@@ -163,14 +162,16 @@ export async function uploadPdfs(files: File[]): Promise<{
   }
 
   // Validate all files are PDFs
-  const invalidFiles = files.filter(file => file.type !== 'application/pdf')
+  const invalidFiles = files.filter((file) => file.type !== 'application/pdf')
   if (invalidFiles.length > 0) {
-    throw new Error(`Invalid file types detected. Only PDF files are supported. Invalid files: ${invalidFiles.map(f => f.name).join(', ')}`)
+    throw new Error(
+      `Invalid file types detected. Only PDF files are supported. Invalid files: ${invalidFiles.map((f) => f.name).join(', ')}`,
+    )
   }
 
   // Create FormData for multipart upload
   const formData = new FormData()
-  files.forEach(file => {
+  files.forEach((file) => {
     formData.append('files', file)
   })
 
@@ -180,8 +181,12 @@ export async function uploadPdfs(files: File[]): Promise<{
   })
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ error: 'Upload failed' }))
-    throw new Error(errorData.error || `Upload failed with status ${response.status}`)
+    const errorData = await response
+      .json()
+      .catch(() => ({ error: 'Upload failed' }))
+    throw new Error(
+      errorData.error || `Upload failed with status ${response.status}`,
+    )
   }
 
   return response.json()
@@ -190,12 +195,12 @@ export async function uploadPdfs(files: File[]): Promise<{
 // Convenience function for single PDF
 export async function uploadPdf(file: File): Promise<Source> {
   const response = await uploadPdfs([file])
-  
+
   if (response.results.length === 0) {
     const errorMessage = response.errors[0]?.error || 'Failed to upload PDF'
     throw new Error(errorMessage)
   }
-  
+
   return response.results[0]
 }
 
@@ -216,23 +221,26 @@ export async function addQuiz(quizData: unknown): Promise<Quiz> {
   return response.data
 }
 
-export async function updateQuiz(
-  id: number, 
-  quizData: unknown
-): Promise<Quiz> {
+export async function updateQuiz(id: number, quizData: unknown): Promise<Quiz> {
   const validatedData = UpdateQuizSchema.parse(quizData)
   const response = await apiClient.put<Quiz>(`/quizzes/${id}`, validatedData)
   return response.data
 }
 
 export async function deleteQuiz(id: number): Promise<{ success: boolean }> {
-  const response = await apiClient.delete<{ success: boolean }>(`/quizzes/${id}`)
+  const response = await apiClient.delete<{ success: boolean }>(
+    `/quizzes/${id}`,
+  )
   return response.data
 }
 
 // Question API functions
-export async function getQuestions(quizId: number): Promise<QuestionResponse[]> {
-  const response = await apiClient.get<QuestionResponse[]>(`/quizzes/${quizId}/questions`)
+export async function getQuestions(
+  quizId: number,
+): Promise<QuestionResponse[]> {
+  const response = await apiClient.get<QuestionResponse[]>(
+    `/quizzes/${quizId}/questions`,
+  )
   return response.data
 }
 
@@ -248,16 +256,23 @@ export async function addQuestion(questionData: unknown): Promise<Question> {
 }
 
 export async function updateQuestion(
-  id: number, 
-  questionData: unknown
+  id: number,
+  questionData: unknown,
 ): Promise<Question> {
   const validatedData = UpdateQuestionSchema.parse(questionData)
-  const response = await apiClient.put<Question>(`/questions/${id}`, validatedData)
+  const response = await apiClient.put<Question>(
+    `/questions/${id}`,
+    validatedData,
+  )
   return response.data
 }
 
-export async function deleteQuestion(id: number): Promise<{ success: boolean }> {
-  const response = await apiClient.delete<{ success: boolean }>(`/questions/${id}`)
+export async function deleteQuestion(
+  id: number,
+): Promise<{ success: boolean }> {
+  const response = await apiClient.delete<{ success: boolean }>(
+    `/questions/${id}`,
+  )
   return response.data
 }
 

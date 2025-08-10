@@ -2,22 +2,23 @@ import { llm } from '@services/ollama.service'
 // import { llm } from '@services/openai.service'
 import type { QuestionType, Difficulty } from '@schemas/question.model'
 
-
 /**
  * Generate a summary from multiple sources using the LLM
  */
 export async function generateSummary(
   sources: Array<{ id: number; content: string; url: string | null }>,
-  customTitle?: string
+  customTitle?: string,
 ): Promise<string> {
   // Prepare the sources text
-  const sourcesText = sources.map((source, index) => {
-    const sourceHeader = source.url 
-      ? `Source ${index + 1} (${source.url}):`
-      : `Source ${index + 1}:`
-    
-    return `${sourceHeader}\n${source.content}\n`
-  }).join('\n---\n\n')
+  const sourcesText = sources
+    .map((source, index) => {
+      const sourceHeader = source.url
+        ? `Source ${index + 1} (${source.url}):`
+        : `Source ${index + 1}:`
+
+      return `${sourceHeader}\n${source.content}\n`
+    })
+    .join('\n---\n\n')
 
   // Create the prompt for the LLM
   const prompt = `You are a research assistant tasked with creating a comprehensive summary from multiple sources. 
@@ -40,11 +41,12 @@ Please provide a comprehensive summary that synthesizes the information from all
   try {
     // Generate the summary using the LLM
     const response = await llm.invoke(prompt)
-    
+
     // Extract the content from the response
-    const summaryContent = typeof response.content === 'string' 
-      ? response.content.trim()
-      : 'Summary generation failed - no content returned'
+    const summaryContent =
+      typeof response.content === 'string'
+        ? response.content.trim()
+        : 'Summary generation failed - no content returned'
 
     if (!summaryContent || summaryContent.length < 50) {
       throw new Error('Generated summary is too short or empty')
@@ -60,31 +62,34 @@ ${summaryContent}
 ---
 
 ## Sources Referenced:
-${sources.map((source, index) => 
-  `${index + 1}. ${source.url || `Source ${source.id}`}`
-).join('\n')}
+${sources
+  .map(
+    (source, index) => `${index + 1}. ${source.url || `Source ${source.id}`}`,
+  )
+  .join('\n')}
 `
 
     return finalSummary
-
   } catch (error) {
     console.error('LLM summary generation failed:', error)
-    throw new Error(`Failed to generate summary: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new Error(
+      `Failed to generate summary: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    )
   }
 }
 
 interface GeneratedQuestion {
-  content: string;
-  type: QuestionType;
-  options?: string[];
-  correctAnswer?: string;
-  explanation?: string;
-  difficulty: Difficulty;
+  content: string
+  type: QuestionType
+  options?: string[]
+  correctAnswer?: string
+  explanation?: string
+  difficulty: Difficulty
 }
 
 interface GeneratedQuizData {
-  title: string;
-  questions: GeneratedQuestion[];
+  title: string
+  questions: GeneratedQuestion[]
 }
 
 /**
@@ -95,7 +100,7 @@ export async function generateQuizWithLLM(
   context: string,
   questionCount: number,
   questionTypes: QuestionType[],
-  difficulty: Difficulty
+  difficulty: Difficulty,
 ): Promise<GeneratedQuizData> {
   //TODO: Fix prompt so that distribution of MCQ are more equal
   const systemPrompt = `You are an expert educational content creator. Your task is to generate a comprehensive quiz based on the provided context from user notes.
@@ -173,12 +178,13 @@ Remember to:
     // Generate the quiz using the LLM
     const response = await llm.invoke([
       { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt }
+      { role: 'user', content: userPrompt },
     ])
 
     // Extract and parse the JSON response
-    const content = typeof response.content === 'string' ? response.content.trim() : ''
-    
+    const content =
+      typeof response.content === 'string' ? response.content.trim() : ''
+
     if (!content) {
       throw new Error('LLM returned empty response')
     }
@@ -187,7 +193,7 @@ Remember to:
     let jsonString = content
     const jsonStart = content.indexOf('{')
     const jsonEnd = content.lastIndexOf('}')
-    
+
     if (jsonStart !== -1 && jsonEnd !== -1) {
       jsonString = content.substring(jsonStart, jsonEnd + 1)
     }
@@ -211,13 +217,15 @@ Remember to:
         console.log(`Question ${index + 1}:`)
         console.log('Options:', question.options)
         console.log('Correct Answer:', question.correctAnswer)
-        console.log('Match found:', question.options?.includes(question.correctAnswer || ''))
+        console.log(
+          'Match found:',
+          question.options?.includes(question.correctAnswer || ''),
+        )
         console.log('---')
       }
     })
 
     return quizData
-
   } catch (error) {
     console.error('Quiz generation error:', error)
     if (error instanceof SyntaxError) {
@@ -235,7 +243,7 @@ export async function generateQuizFromNotes(
   context: string,
   questionCount: number = 10,
   questionTypes: QuestionType[] = ['MULTIPLE_CHOICE'],
-  difficulty: Difficulty = 'MEDIUM'
+  difficulty: Difficulty = 'MEDIUM',
 ): Promise<GeneratedQuizData> {
   try {
     const quizData = await generateQuizWithLLM(
@@ -243,12 +251,14 @@ export async function generateQuizFromNotes(
       context,
       questionCount,
       questionTypes,
-      difficulty
+      difficulty,
     )
 
     return quizData
   } catch (error) {
     console.error('Quiz generation from notes failed:', error)
-    throw new Error(`Failed to generate quiz: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    throw new Error(
+      `Failed to generate quiz: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    )
   }
 }

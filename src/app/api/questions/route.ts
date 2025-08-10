@@ -16,11 +16,14 @@ export async function POST(req: NextRequest) {
 
     // Verify quiz exists and belongs to user
     const quiz = await prisma.quiz.findUnique({
-      where: { id: validatedData.quizId }
+      where: { id: validatedData.quizId },
     })
 
     if (!quiz || quiz.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Quiz not found or unauthorized' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Quiz not found or unauthorized' },
+        { status: 404 },
+      )
     }
 
     const newQuestion = await prisma.question.create({
@@ -30,16 +33,17 @@ export async function POST(req: NextRequest) {
           select: {
             id: true,
             title: true,
-            userId: true
-          }
-        }
-      }
+            userId: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json(newQuestion)
   } catch (error) {
     console.error('Error creating question:', error)
-    const message = error instanceof Error ? error.message : 'Failed to create question'
+    const message =
+      error instanceof Error ? error.message : 'Failed to create question'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

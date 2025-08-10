@@ -8,14 +8,16 @@ import { addEmbeddingToNote } from '@db/prisma.vector'
 
 // Schema for the request body
 const SummaryRequestSchema = z.object({
-  sourceIds: z.array(z.number().int().positive()).min(1, 'At least one source is required'),
+  sourceIds: z
+    .array(z.number().int().positive())
+    .min(1, 'At least one source is required'),
   title: z.string().optional(), // Optional custom title for the summary
 })
 
 /**
  * POST /api/notes/summary
  * Generate a summary note based on selected sources.
- * 
+ *
  * Expected JSON body:
  * {
  *   "sourceIds": number[],  // Array of source IDs to summarize
@@ -36,25 +38,32 @@ export async function POST(req: NextRequest) {
     const sources = await prisma.source.findMany({
       where: {
         id: { in: sourceIds },
-        userId: session.user.id
+        userId: session.user.id,
       },
       select: {
         id: true,
         content: true,
         url: true,
-      }
+      },
     })
 
     if (sources.length === 0) {
-      return NextResponse.json({ 
-        error: 'No valid sources found' 
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: 'No valid sources found',
+        },
+        { status: 400 },
+      )
     }
 
     if (sources.length !== sourceIds.length) {
-      return NextResponse.json({ 
-        error: 'Some sources were not found or you do not have access to them' 
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error:
+            'Some sources were not found or you do not have access to them',
+        },
+        { status: 400 },
+      )
     }
 
     // Generate summary using LLM
@@ -69,20 +78,20 @@ export async function POST(req: NextRequest) {
         content: summaryContent,
         userId: session.user.id,
         sources: {
-          connect: sourceIds.map(id => ({ id }))
-        }
+          connect: sourceIds.map((id) => ({ id })),
+        },
       },
       include: {
         sources: {
           select: {
             id: true,
             url: true,
-            content: true
-          }
-        }
-      }
+            content: true,
+          },
+        },
+      },
     })
-    
+
     addEmbeddingToNote(summaryNote.id)
 
     return NextResponse.json({
@@ -92,21 +101,24 @@ export async function POST(req: NextRequest) {
         sourcesUsed: sources.length,
         totalSources: sourceIds.length,
         generatedAt: new Date().toISOString(),
-        embeddingDimensions: embedding.length
-      }
+        embeddingDimensions: embedding.length,
+      },
     })
-
   } catch (error) {
     console.error('Summary generation error:', error)
-    
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ 
-        error: 'Invalid request data',
-        details: error.errors 
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: 'Invalid request data',
+          details: error.errors,
+        },
+        { status: 400 },
+      )
     }
 
-    const message = error instanceof Error ? error.message : 'Failed to generate summary'
+    const message =
+      error instanceof Error ? error.message : 'Failed to generate summary'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

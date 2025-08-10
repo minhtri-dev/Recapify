@@ -6,7 +6,7 @@ import { UpdateQuizSchema } from '@schemas/quiz.model'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -15,21 +15,21 @@ export async function GET(
 
   try {
     const { id } = await params
-    
+
     const quiz = await prisma.quiz.findUnique({
       where: { id: Number(id) },
       include: {
         questions: {
-          orderBy: { order: 'asc' }
+          orderBy: { order: 'asc' },
         },
         user: {
           select: {
             id: true,
             name: true,
-            email: true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     })
 
     if (!quiz || quiz.userId !== session.user.id) {
@@ -45,7 +45,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -59,7 +59,7 @@ export async function PUT(
 
     // Check quiz exists and belongs to user
     const existingQuiz = await prisma.quiz.findUnique({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
     })
 
     if (!existingQuiz || existingQuiz.userId !== session.user.id) {
@@ -71,22 +71,23 @@ export async function PUT(
       data: validatedData,
       include: {
         questions: {
-          orderBy: { order: 'asc' }
-        }
-      }
+          orderBy: { order: 'asc' },
+        },
+      },
     })
 
     return NextResponse.json(updatedQuiz)
   } catch (error) {
     console.error('Error updating quiz:', error)
-    const message = error instanceof Error ? error.message : 'Failed to update quiz'
+    const message =
+      error instanceof Error ? error.message : 'Failed to update quiz'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -98,7 +99,7 @@ export async function DELETE(
 
     // Check quiz exists and belongs to user
     const existingQuiz = await prisma.quiz.findUnique({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
     })
 
     if (!existingQuiz || existingQuiz.userId !== session.user.id) {
@@ -107,12 +108,15 @@ export async function DELETE(
 
     // Delete quiz (cascade will handle questions)
     await prisma.quiz.delete({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
     })
 
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting quiz:', error)
-    return NextResponse.json({ error: 'Failed to delete quiz' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to delete quiz' },
+      { status: 500 },
+    )
   }
 }

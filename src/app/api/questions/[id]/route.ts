@@ -6,7 +6,7 @@ import { UpdateQuestionSchema } from '@schemas/question.model'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -15,7 +15,7 @@ export async function GET(
 
   try {
     const { id } = await params
-    
+
     const question = await prisma.question.findUnique({
       where: { id: Number(id) },
       include: {
@@ -23,10 +23,10 @@ export async function GET(
           select: {
             id: true,
             title: true,
-            userId: true
-          }
-        }
-      }
+            userId: true,
+          },
+        },
+      },
     })
 
     if (!question || question.quiz.userId !== session.user.id) {
@@ -36,13 +36,16 @@ export async function GET(
     return NextResponse.json(question)
   } catch (error) {
     console.error('Error fetching question:', error)
-    return NextResponse.json({ error: 'Failed to fetch question' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to fetch question' },
+      { status: 500 },
+    )
   }
 }
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -58,8 +61,8 @@ export async function PUT(
     const existingQuestion = await prisma.question.findUnique({
       where: { id: Number(id) },
       include: {
-        quiz: true
-      }
+        quiz: true,
+      },
     })
 
     if (!existingQuestion || existingQuestion.quiz.userId !== session.user.id) {
@@ -74,23 +77,24 @@ export async function PUT(
           select: {
             id: true,
             title: true,
-            userId: true
-          }
-        }
-      }
+            userId: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json(updatedQuestion)
   } catch (error) {
     console.error('Error updating question:', error)
-    const message = error instanceof Error ? error.message : 'Failed to update question'
+    const message =
+      error instanceof Error ? error.message : 'Failed to update question'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -104,8 +108,8 @@ export async function DELETE(
     const existingQuestion = await prisma.question.findUnique({
       where: { id: Number(id) },
       include: {
-        quiz: true
-      }
+        quiz: true,
+      },
     })
 
     if (!existingQuestion || existingQuestion.quiz.userId !== session.user.id) {
@@ -113,12 +117,15 @@ export async function DELETE(
     }
 
     await prisma.question.delete({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
     })
 
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting question:', error)
-    return NextResponse.json({ error: 'Failed to delete question' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to delete question' },
+      { status: 500 },
+    )
   }
 }

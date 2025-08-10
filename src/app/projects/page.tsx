@@ -21,14 +21,15 @@ export default function ProjectsPage() {
         setLoading(true)
         const [notesData, sourcesData] = await Promise.all([
           getNotes(),
-          getSources()
+          getSources(),
         ])
-        
+
         setNotes(notesData)
         setSources(sourcesData)
         setError(null)
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load data'
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to load data'
         setError(errorMessage)
       } finally {
         setLoading(false)
@@ -86,12 +87,22 @@ export default function ProjectsPage() {
             <div className="rounded-md bg-red-50 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  <svg
+                    className="h-5 w-5 text-red-400"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">Error Loading Data</h3>
+                  <h3 className="text-sm font-medium text-red-800">
+                    Error Loading Data
+                  </h3>
                   <p className="mt-2 text-sm text-red-700">{error}</p>
                   <div className="mt-4">
                     <button
@@ -117,9 +128,12 @@ export default function ProjectsPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">My Knowledge Base</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                My Knowledge Base
+              </h1>
               <p className="mt-2 text-gray-600">
-                View your notes and create AI-generated summaries from your sources
+                View your notes and create AI-generated summaries from your
+                sources
               </p>
             </div>
             <div className="flex space-x-3">
@@ -127,8 +141,18 @@ export default function ProjectsPage() {
                 onClick={() => router.push('/upload')}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
               >
-                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                <svg
+                  className="mr-2 h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
                 </svg>
                 Upload Sources
               </button>
@@ -137,8 +161,18 @@ export default function ProjectsPage() {
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
                 disabled={sources.length === 0}
               >
-                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="mr-2 h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
                 Generate Summary
               </button>
@@ -151,13 +185,25 @@ export default function ProjectsPage() {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg className="h-8 w-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  className="h-8 w-8 text-blue-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Total Notes</p>
-                <p className="text-2xl font-semibold text-gray-900">{notes.length}</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {notes.length}
+                </p>
               </div>
             </div>
           </div>
@@ -165,13 +211,27 @@ export default function ProjectsPage() {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg className="h-8 w-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                <svg
+                  className="h-8 w-8 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  />
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Available Sources</p>
-                <p className="text-2xl font-semibold text-gray-900">{sources.length}</p>
+                <p className="text-sm font-medium text-gray-500">
+                  Available Sources
+                </p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {sources.length}
+                </p>
               </div>
             </div>
           </div>
@@ -179,12 +239,24 @@ export default function ProjectsPage() {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg className="h-8 w-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="h-8 w-8 text-purple-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">AI Summaries</p>
+                <p className="text-sm font-medium text-gray-500">
+                  AI Summaries
+                </p>
                 <p className="text-2xl font-semibold text-gray-900">Ready</p>
               </div>
             </div>
@@ -196,13 +268,25 @@ export default function ProjectsPage() {
           <div className="mb-8">
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-medium text-gray-900">Generate AI Summary</h2>
+                <h2 className="text-lg font-medium text-gray-900">
+                  Generate AI Summary
+                </h2>
                 <button
                   onClick={() => setShowSummaryGenerator(false)}
                   className="text-gray-400 hover:text-gray-600"
                 >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -220,13 +304,25 @@ export default function ProjectsPage() {
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-medium text-gray-900">Your Notes</h2>
           </div>
-          
+
           {notes.length === 0 ? (
             <div className="p-6 text-center">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No notes yet</h3>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                No notes yet
+              </h3>
               <p className="mt-1 text-sm text-gray-500">
                 Start by uploading some sources and generating summaries.
               </p>
@@ -267,7 +363,8 @@ export default function ProjectsPage() {
                       </p>
                       <div className="mt-3 flex items-center text-xs text-gray-500 space-x-4">
                         <span>
-                          Created {new Date(note.createdAt).toLocaleDateString()}
+                          Created{' '}
+                          {new Date(note.createdAt).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
@@ -292,16 +389,29 @@ export default function ProjectsPage() {
         {/* Quick Actions */}
         {sources.length === 0 && (
           <div className="mt-8 bg-yellow-50 rounded-lg p-6">
-            <h3 className="text-lg font-medium text-yellow-900 mb-2">Get Started</h3>
+            <h3 className="text-lg font-medium text-yellow-900 mb-2">
+              Get Started
+            </h3>
             <p className="text-sm text-yellow-800 mb-4">
-              Upload some sources (PDFs, URLs, etc.) to start generating AI summaries and building your knowledge base.
+              Upload some sources (PDFs, URLs, etc.) to start generating AI
+              summaries and building your knowledge base.
             </p>
             <button
               onClick={() => router.push('/upload')}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-yellow-900 bg-yellow-200 hover:bg-yellow-300"
             >
-              <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              <svg
+                className="mr-2 h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
               </svg>
               Upload Your First Source
             </button>
