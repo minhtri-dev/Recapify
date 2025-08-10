@@ -16,9 +16,9 @@ model User {
   emailVerified DateTime?
   accounts      Account[]
   sessions      Session[]
-  projects      Project[]
   sources       Source[]
   quizzes       Quiz[]
+  notes         Note[]
 
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
@@ -65,22 +65,12 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-// Define the Project and Note models
-
-model Project {
-  id        Int      @id @default(autoincrement())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  name      String
-  notes     Note[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+// Define Note models
 
 model Note {
   id        Int      @id @default(autoincrement())
-  projectId Int
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User    @relation(fields: [userId], references: [id])
   content   String
   vector    Unsupported("vector")?
   sources   Source[]

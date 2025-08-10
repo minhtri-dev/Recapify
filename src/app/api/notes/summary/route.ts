@@ -13,8 +13,8 @@ const SummaryRequestSchema = z.object({
 })
 
 /**
- * POST /api/notes/summary/[id]
- * Generate a summary note based on selected sources for a specific project.
+ * POST /api/notes/summary
+ * Generate a summary note based on selected sources.
  * 
  * Expected JSON body:
  * {
@@ -22,34 +22,15 @@ const SummaryRequestSchema = z.object({
  *   "title": string         // Optional custom title
  * }
  */
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
-    const { id } = await params
-    const projectId = Number(id)
     const body = await req.json()
     const { sourceIds, title } = SummaryRequestSchema.parse(body)
-
-    // Verify project exists and belongs to user
-    const project = await prisma.project.findFirst({
-      where: { 
-        id: projectId,
-        userId: session.user.id 
-      },
-    })
-
-    if (!project) {
-      return NextResponse.json({ 
-        error: 'Project not found or unauthorized' 
-      }, { status: 404 })
-    }
 
     // Fetch the sources and verify they belong to the user
     const sources = await prisma.source.findMany({
@@ -86,7 +67,7 @@ export async function POST(
     const summaryNote = await prisma.note.create({
       data: {
         content: summaryContent,
-        projectId: projectId,
+        userId: session.user.id,
         sources: {
           connect: sourceIds.map(id => ({ id }))
         }
@@ -98,15 +79,10 @@ export async function POST(
             url: true,
             content: true
           }
-        },
-        project: {
-          select: {
-            id: true,
-            name: true
-          }
         }
       }
     })
+    
     addEmbeddingToNote(summaryNote.id)
 
     return NextResponse.json({

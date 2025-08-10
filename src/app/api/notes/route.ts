@@ -5,7 +5,7 @@ import { auth } from '@auth'
 
 /**
  * GET /api/notes
- * List all notes associated with projects owned by the current user.
+ * List all notes owned by the current user.
  */
 export async function GET() {
   const session = await auth()
@@ -13,13 +13,9 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   const notes = await prisma.note.findMany({
-    where: {
-      project: { userId: session.user.id },
-    },
+    where: { userId: session.user.id },
     include: {
-      // Include related sources if needed
       sources: true,
-      project: true,
     },
   })
   return NextResponse.json(notes)
@@ -27,12 +23,11 @@ export async function GET() {
 
 /**
  * POST /api/notes
- * Create a new note. Requires a valid project (by projectId) that belongs to the current user.
+ * Create a new note.
  * Optionally, an array of source IDs can be provided to attach to the note.
  *
  * Expected JSON body:
  * {
- *   "projectId": number,
  *   "content": string,
  *   "sources": number[]  // optional
  * }
@@ -43,27 +38,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   
-  const { projectId, content, sources } = await req.json()
-  
-  // Ensure project exists and belongs to current user
-  const project = await prisma.project.findFirst({
-    where: { 
-      id: Number(projectId),
-      userId: session.user.id 
-    },
-  })
-  
-  if (!project) {
-    return NextResponse.json({ error: 'Project not found or unauthorized' }, { status: 400 })
-  }
+  const { content, sources } = await req.json()
   
   try {
     const newNote = await prisma.note.create({
       data: {
         content,
-        project: {
-          connect: { id: Number(projectId) },
-        },
+        userId: session.user.id,
         // If sources provided, attach them
         ...(sources && sources.length > 0
           ? { sources: { connect: sources.map((id: number) => ({ id })) } }
@@ -71,7 +52,6 @@ export async function POST(req: NextRequest) {
       },
       include: {
         sources: true,
-        project: true,
       },
     })
   
