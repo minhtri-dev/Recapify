@@ -1,23 +1,13 @@
-import { Tool } from "langchain/tools";
+import { tool } from "@langchain/core/tools";
+import { z } from "zod";
 import { searchSimilarNotes } from "@db/prisma.vector";
 
-interface LookupInput {
-  query: string;
-  limit?: number;
-}
-
-export class LookupTool extends Tool {
-  name = "lookup_notes";
-  description = "Search for similar notes based on a query string. Use this when you need to find relevant information from the user's notes.";
-
-  async _call(input: string): Promise<string> {
+export const LookupTool = tool(
+  async ({ query, limit = 5 }) => {
     try {
-      const { query, limit = 5 } = JSON.parse(input) as LookupInput;
-
       if (!query) {
         throw new Error("Query parameter is required");
       }
-
       const results = await searchSimilarNotes(query, limit);
       
       if (!results || results.length === 0) {
@@ -51,18 +41,29 @@ export class LookupTool extends Tool {
         error: error instanceof Error ? error.message : "Unknown error occurred during lookup",
       });
     }
+  },
+  {
+    name: "LookupNotes",
+    description: "Search for similar notes based on a query string. Use this tool to find relevant information from the user's notes to help answer their questions. The results should be used as context to formulate your response.",
+    schema: z.object({
+      query: z.string().describe("The search query to find similar notes"),
+      limit: z
+        .number()
+        .optional()
+        .default(5)
+        .describe("Maximum number of results to return"),
+    }),
+  }
+);
+
+// Helper function for direct use in API routes
+export async function searchNotes(query: string, limit: number = 5) {
+  const result = await LookupTool.invoke({ query, limit });
+  const parsed = JSON.parse(result);
+
+  if (!parsed.success) {
+    throw new Error(parsed.error);
   }
 
-  // Helper method for direct use in API routes
-  async searchNotes(query: string, limit: number = 5) {
-    const input = JSON.stringify({ query, limit });
-    const result = await this._call(input);
-    const parsed = JSON.parse(result);
-
-    if (!parsed.success) {
-      throw new Error(parsed.error);
-    }
-
-    return parsed.data;
-  }
+  return parsed.data;
 }

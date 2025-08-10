@@ -334,3 +334,5 @@ export async function generateQuiz(requestData: unknown): Promise<{
   const response = await apiClient.post('/quizzes/generate', validatedData)
   return response.data
 }
+
+export * from './agent.client'
