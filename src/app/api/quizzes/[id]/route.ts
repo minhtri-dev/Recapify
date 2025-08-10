@@ -6,7 +6,7 @@ import { UpdateQuizSchema } from '@schemas/quiz.model'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -45,7 +45,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
@@ -87,7 +87,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
