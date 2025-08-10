@@ -1,12 +1,6 @@
 import axios from 'axios'
 import { 
-  CreateProjectSchema, 
-  UpdateProjectSchema, 
-  type Project 
-} from '@schemas/project.model'
-import { 
-  CreateNoteSchema, 
-  UpdateNoteSchema, 
+  CreateNoteSchema,
   type Note 
 } from '@schemas/note.model'
 import { 
@@ -45,37 +39,6 @@ apiClient.interceptors.response.use(
   }
 )
 
-// Project API functions
-export async function getProjects(): Promise<Project[]> {
-  const response = await apiClient.get<Project[]>('/projects')
-  return response.data
-}
-
-export async function getProject(id: number): Promise<Project> {
-  const response = await apiClient.get<Project>(`/projects/${id}`)
-  return response.data
-}
-
-export async function addProject(projectData: unknown): Promise<Project> {
-  const validatedData = CreateProjectSchema.parse(projectData)
-  const response = await apiClient.post<Project>('/projects', validatedData)
-  return response.data
-}
-
-export async function updateProject(
-  id: number, 
-  projectData: unknown
-): Promise<Project> {
-  const validatedData = UpdateProjectSchema.parse(projectData)
-  const response = await apiClient.put<Project>(`/projects/${id}`, validatedData)
-  return response.data
-}
-
-export async function deleteProject(id: number): Promise<{ success: boolean }> {
-  const response = await apiClient.delete<{ success: boolean }>(`/projects/${id}`)
-  return response.data
-}
-
 // Note API functions
 export async function getNotes(): Promise<Note[]> {
   const response = await apiClient.get<Note[]>('/notes')
@@ -93,17 +56,31 @@ export async function addNote(noteData: unknown): Promise<Note> {
   return response.data
 }
 
-export async function updateNote(
-  id: number, 
-  noteData: unknown
-): Promise<Note> {
-  const validatedData = UpdateNoteSchema.parse(noteData)
-  const response = await apiClient.put<Note>(`/notes/${id}`, validatedData)
-  return response.data
-}
+// Summary generation function
+export async function generateNoteSummary(
+  sourceIds: number[],
+  title?: string
+): Promise<{
+  success: boolean
+  note: Note & {
+    sources: Array<{ id: number; url: string | null; content: string }>
+  }
+  metadata: {
+    sourcesUsed: number
+    totalSources: number
+    generatedAt: string
+  }
+}> {
+  if (!Array.isArray(sourceIds) || sourceIds.length === 0) {
+    throw new Error('At least one source ID is required')
+  }
 
-export async function deleteNote(id: number): Promise<{ success: boolean }> {
-  const response = await apiClient.delete<{ success: boolean }>(`/notes/${id}`)
+  const requestBody = {
+    sourceIds,
+    ...(title && { title })
+  }
+
+  const response = await apiClient.post('/notes/summary', requestBody)
   return response.data
 }
 
@@ -220,36 +197,6 @@ export async function uploadPdf(file: File): Promise<Source> {
   }
   
   return response.results[0]
-}
-
-// Summary generation function
-export async function generateNoteSummary(
-  projectId: number,
-  sourceIds: number[],
-  title?: string
-): Promise<{
-  success: boolean
-  note: Note & {
-    sources: Array<{ id: number; url: string | null; content: string }>
-    project: { id: number; name: string }
-  }
-  metadata: {
-    sourcesUsed: number
-    totalSources: number
-    generatedAt: string
-  }
-}> {
-  if (!Array.isArray(sourceIds) || sourceIds.length === 0) {
-    throw new Error('At least one source ID is required')
-  }
-
-  const requestBody = {
-    sourceIds,
-    ...(title && { title })
-  }
-
-  const response = await apiClient.post(`/notes/summary/${projectId}`, requestBody)
-  return response.data
 }
 
 // Quiz API functions

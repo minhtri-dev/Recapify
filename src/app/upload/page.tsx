@@ -1,9 +1,10 @@
-import { UrlUploadForm } from '@components'
+import { PdfUploadForm, UrlUploadForm } from '@components'
 
 const page = () => {
   return (
     <main>
-        <UrlUploadForm/>
+        <UrlUploadForm />
+        <PdfUploadForm />
     </main>
   )
 }

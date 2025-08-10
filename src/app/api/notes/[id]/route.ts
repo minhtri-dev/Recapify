@@ -6,7 +6,7 @@ import { auth } from '@auth'
 /**
  * GET /api/notes/[id]
  * Retrieve a specific note by ID.
- * Checks that the note belongs to a project owned by the current user.
+ * Checks that the note belongs to the current user.
  */
 export async function GET(
   req: NextRequest, 
@@ -21,10 +21,10 @@ export async function GET(
   
   const note = await prisma.note.findUnique({
     where: { id: Number(id) },
-    include: { sources: true, project: true },
+    include: { sources: true },
   })
   
-  if (!note || note.project.userId !== session.user.id) {
+  if (!note || note.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
   return NextResponse.json(note)
@@ -33,7 +33,7 @@ export async function GET(
 /**
  * PUT /api/notes/[id]
  * Update a note's content and optionally its attached sources.
- * Checks that the note belongs to a project owned by the current user.
+ * Checks that the note belongs to the current user.
  *
  * Expected JSON body:
  * {
@@ -53,13 +53,11 @@ export async function PUT(
   const { id } = await params
   const { content, sources } = await req.json()
   
-  // Fetch the note along with its project to verify ownership
   const note = await prisma.note.findUnique({
     where: { id: Number(id) },
-    include: { project: true },
   })
   
-  if (!note || note.project.userId !== session.user.id) {
+  if (!note || note.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
   
@@ -73,7 +71,7 @@ export async function PUT(
           ? { sources: { set: sources.map((id: number) => ({ id })) } }
           : {}),
       },
-      include: { sources: true, project: true },
+      include: { sources: true },
     })
     return NextResponse.json(updatedNote)
   } catch (error: unknown) {
@@ -85,7 +83,7 @@ export async function PUT(
 /**
  * DELETE /api/notes/[id]
  * Delete a specific note.
- * Checks that the note belongs to a project owned by the current user.
+ * Checks that the note belongs to the current user.
  */
 export async function DELETE(
   req: NextRequest, 
@@ -100,9 +98,8 @@ export async function DELETE(
   
   const note = await prisma.note.findUnique({
     where: { id: Number(id) },
-    include: { project: true },
   })
-  if (!note || note.project.userId !== session.user.id) {
+  if (!note || note.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
   

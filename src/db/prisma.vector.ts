@@ -1,6 +1,7 @@
 import { PrismaVectorStore } from "@langchain/community/vectorstores/prisma";
 import { Embeddings } from "@services/embeddings.service";
 import { PrismaClient, Prisma, Note } from "@prisma/client";
+import { auth } from '@auth'
 
 const db = new PrismaClient();
 
@@ -43,8 +44,31 @@ export const addEmbeddingToNote = async (noteId: number) => {
 // Helper function to search similar notes
 export const searchSimilarNotes = async (query: string, limit: number = 5) => {
   try {
-    const results = await notesVectorStore.similaritySearch(query, limit);
-    return results;
+    const session = await auth()
+    if (!session?.user?.id) {
+      throw new Error('Unauthorized')
+    }
+
+    // Get all notes that belong to the current user
+    const userNotes = await db.note.findMany({
+      where: { userId: session.user.id },
+      select: { id: true }
+    })
+    const noteIds = userNotes.map(note => note.id)
+    
+    if (noteIds.length === 0) {
+      return []
+    }
+
+    // Filter by note IDs owned by the user
+    const results = await notesVectorStore.similaritySearch(
+      query,
+      limit,
+      {
+        id: { in: noteIds }
+      }
+    )
+    return results
   } catch (error) {
     console.error('Error searching similar notes:', error);
     throw error;

@@ -3,7 +3,7 @@ import { z } from 'zod'
 // Note model schema
 export const NoteSchema = z.object({
   id: z.number().int().positive(),
-  projectId: z.number().int().positive(),
+  userId: z.string().cuid(),
   content: z.string().min(1, 'Content is required'),
   vector: z.any().optional(), // Unsupported vector type
   createdAt: z.date(),
@@ -12,7 +12,6 @@ export const NoteSchema = z.object({
 
 // Schema for creating a new note (excluding auto-generated fields)
 export const CreateNoteSchema = z.object({
-  projectId: z.number().int().positive(),
   content: z.string().min(1, 'Content is required'),
   sources: z.array(z.number().int().positive()).optional(), // Array of source IDs
 })
@@ -25,11 +24,6 @@ export const UpdateNoteSchema = z.object({
 
 // Schema for note API responses (including relations if needed)
 export const NoteResponseSchema = NoteSchema.extend({
-  project: z.object({
-    id: z.number(),
-    name: z.string(),
-    userId: z.string(),
-  }).optional(),
   sources: z.array(z.object({
     id: z.number(),
     content: z.string(),
