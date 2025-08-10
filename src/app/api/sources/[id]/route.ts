@@ -5,15 +5,15 @@ import { auth } from '@auth'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  
+
   const { id } = await params
-  
+
   const source = await prisma.source.findUnique({
     where: { id: Number(id) },
   })
@@ -25,16 +25,16 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  
+
   const { id } = await params
   const { content, url } = await req.json()
-  
+
   const source = await prisma.source.findUnique({
     where: { id: Number(id) },
   })
@@ -50,15 +50,15 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  
+
   const { id } = params
-  
+
   const source = await prisma.source.findUnique({
     where: { id: Number(id) },
   })

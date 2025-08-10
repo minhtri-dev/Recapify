@@ -11,9 +11,10 @@ export default function Home() {
             Welcome to Recapify
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            Your AI-powered knowledge base. Upload sources, generate summaries, and build your personal learning repository.
+            Your AI-powered knowledge base. Upload sources, generate summaries,
+            and build your personal learning repository.
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <Link
               href="/projects"
@@ -34,7 +35,7 @@ export default function Home() {
               Generate Quiz
             </Link>
           </div>
-          
+
           <div className="flex justify-center space-x-4">
             <SignIn />
             <SignOut />

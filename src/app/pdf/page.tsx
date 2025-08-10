@@ -3,7 +3,7 @@ import { PdfUploadForm } from '@components'
 const page = () => {
   return (
     <main>
-        <PdfUploadForm/>
+      <PdfUploadForm />
     </main>
   )
 }

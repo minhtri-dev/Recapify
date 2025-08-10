@@ -24,7 +24,9 @@ export default function ProjectSummaryRedirect() {
               <div className="h-4 bg-gray-200 rounded w-4/6"></div>
             </div>
           </div>
-          <p className="mt-4 text-center text-gray-600">Redirecting to your knowledge base...</p>
+          <p className="mt-4 text-center text-gray-600">
+            Redirecting to your knowledge base...
+          </p>
         </div>
       </div>
     </div>

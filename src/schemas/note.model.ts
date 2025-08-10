@@ -24,12 +24,16 @@ export const UpdateNoteSchema = z.object({
 
 // Schema for note API responses (including relations if needed)
 export const NoteResponseSchema = NoteSchema.extend({
-  sources: z.array(z.object({
-    id: z.number(),
-    content: z.string(),
-    url: z.string().nullable(),
-    userId: z.string(),
-  })).optional(),
+  sources: z
+    .array(
+      z.object({
+        id: z.number(),
+        content: z.string(),
+        url: z.string().nullable(),
+        userId: z.string(),
+      }),
+    )
+    .optional(),
 })
 
 // Type exports

@@ -37,9 +37,9 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  
+
   const { content, sources } = await req.json()
-  
+
   try {
     const newNote = await prisma.note.create({
       data: {
@@ -54,10 +54,11 @@ export async function POST(req: NextRequest) {
         sources: true,
       },
     })
-  
+
     return NextResponse.json(newNote)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'An unknown error occurred'
+    const message =
+      error instanceof Error ? error.message : 'An unknown error occurred'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

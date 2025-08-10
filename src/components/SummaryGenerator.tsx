@@ -16,7 +16,7 @@ export default function SummaryGenerator({
   availableSources,
   onSuccess,
   onError,
-  className = ''
+  className = '',
 }: SummaryGeneratorProps) {
   const [selectedSources, setSelectedSources] = useState<number[]>([])
   const [title, setTitle] = useState('')
@@ -24,15 +24,15 @@ export default function SummaryGenerator({
   const [error, setError] = useState<string | null>(null)
 
   const handleSourceToggle = (sourceId: number) => {
-    setSelectedSources(prev => 
+    setSelectedSources((prev) =>
       prev.includes(sourceId)
-        ? prev.filter(id => id !== sourceId)
-        : [...prev, sourceId]
+        ? prev.filter((id) => id !== sourceId)
+        : [...prev, sourceId],
     )
   }
 
   const handleSelectAll = () => {
-    setSelectedSources(availableSources.map(source => source.id))
+    setSelectedSources(availableSources.map((source) => source.id))
   }
 
   const handleClearAll = () => {
@@ -41,7 +41,7 @@ export default function SummaryGenerator({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (selectedSources.length === 0) {
       const errorMessage = 'Please select at least one source'
       setError(errorMessage)
@@ -55,16 +55,17 @@ export default function SummaryGenerator({
     try {
       const result = await generateNoteSummary(
         selectedSources,
-        title.trim() || undefined
+        title.trim() || undefined,
       )
-      
+
       // Clear form on success
       setSelectedSources([])
       setTitle('')
-      
+
       onSuccess?.(result.note.id)
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to generate summary'
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to generate summary'
       setError(errorMessage)
       onError?.(errorMessage)
     } finally {
@@ -77,7 +78,10 @@ export default function SummaryGenerator({
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title Input */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700"
+          >
             Summary Title (Optional)
           </label>
           <input
@@ -95,7 +99,8 @@ export default function SummaryGenerator({
         <div>
           <div className="flex items-center justify-between mb-3">
             <label className="block text-sm font-medium text-gray-700">
-              Select Sources ({selectedSources.length} of {availableSources.length} selected)
+              Select Sources ({selectedSources.length} of{' '}
+              {availableSources.length} selected)
             </label>
             <div className="space-x-2">
               <button
@@ -119,7 +124,9 @@ export default function SummaryGenerator({
 
           <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-md p-3 space-y-2">
             {availableSources.length === 0 ? (
-              <p className="text-gray-500 text-sm">No sources available. Upload some sources first.</p>
+              <p className="text-gray-500 text-sm">
+                No sources available. Upload some sources first.
+              </p>
             ) : (
               availableSources.map((source) => (
                 <label
@@ -155,9 +162,24 @@ export default function SummaryGenerator({
         >
           {loading ? (
             <>
-              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Generating Summary...
             </>
@@ -171,8 +193,16 @@ export default function SummaryGenerator({
           <div className="rounded-md bg-red-50 p-4">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="ml-3">

@@ -9,21 +9,21 @@ import { auth } from '@auth'
  * Checks that the note belongs to the current user.
  */
 export async function GET(
-  req: NextRequest, 
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  
+
   const { id } = await params
-  
+
   const note = await prisma.note.findUnique({
     where: { id: Number(id) },
     include: { sources: true },
   })
-  
+
   if (!note || note.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
@@ -42,25 +42,25 @@ export async function GET(
  * }
  */
 export async function PUT(
-  req: NextRequest, 
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  
+
   const { id } = await params
   const { content, sources } = await req.json()
-  
+
   const note = await prisma.note.findUnique({
     where: { id: Number(id) },
   })
-  
+
   if (!note || note.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
-  
+
   try {
     const updatedNote = await prisma.note.update({
       where: { id: Number(id) },
@@ -75,7 +75,8 @@ export async function PUT(
     })
     return NextResponse.json(updatedNote)
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unexpected error occurred'
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
@@ -86,30 +87,31 @@ export async function PUT(
  * Checks that the note belongs to the current user.
  */
 export async function DELETE(
-  req: NextRequest, 
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  { params }: { params: { id: string } },
 ) {
   const session = await auth()
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  
+
   const { id } = await params
-  
+
   const note = await prisma.note.findUnique({
     where: { id: Number(id) },
   })
   if (!note || note.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
-  
+
   try {
     await prisma.note.delete({
       where: { id: Number(id) },
     })
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unexpected error occurred'
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

@@ -1,4 +1,4 @@
-import { Chatbot } from "@components"
+import { Chatbot } from '@components'
 
 const page = () => {
   return (
