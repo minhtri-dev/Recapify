@@ -6,6 +6,8 @@ import {
   SystemMessage,
 } from '@langchain/core/messages'
 
+import '@env.config'
+
 export async function POST(request: NextRequest) {
   try {
     const { messages } = await request.json()
